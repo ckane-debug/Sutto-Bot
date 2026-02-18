@@ -1,0 +1,66 @@
+#CODE USED FROM built in pybricks program 
+
+from pybricks.hubs import InventorHub
+from pybricks.pupdevices import Motor, ColorSensor, UltrasonicSensor
+from pybricks.parameters import Port, Color
+from pybricks.tools import wait
+from umath import pi, degrees, pow
+
+MaxSpeed = 1000
+Turn_Speed = 1000
+DrifitingSpeed = 600
+
+State = "Drifting"
+
+motors = {
+    "C": Motor(Port.C),
+    "D": Motor(Port.D),
+}
+
+
+sensor = ColorSensor(Port.E)
+eyes = UltrasonicSensor(Port.A)
+
+def StopAllMotors():
+    for motor in motors.values():
+        motor.stop()
+        motor.reset_angle(0)
+
+def RunSpecificMotor(MotorToRun, MoveLogic):
+    FoundMotor = Motors[MotorToRun]
+    if not FoundMotor:
+        return
+    
+    if MoveLogic.StopAllMotors:
+        StopAllMotors()
+
+    FoundMotor.run_angle(State == "Drifitng" and DrifitingSpeed or State == "Sprinting" and MaxSpeed, MoveLogic.TurnAngle)
+        
+
+def WhenStarted():
+    while True:
+
+        if sensor.color() == Color.WHITE:
+            StopAllMotors()
+
+            motors["D"].run(500)
+            motors["C"].run(-500)
+            wait(500)
+
+            motors["D"].run(500)
+            motors["C"].run(500)
+            wait(300)
+
+            continue 
+
+
+        if eyes.distance() < 200:
+            motors["D"].run(-1000)
+            motors["C"].run(1000)
+            wait(100)
+
+        else:
+            motors["D"].run(-500)
+            motors["C"].run(500)
+
+WhenStarted()
